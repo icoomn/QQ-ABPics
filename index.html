@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="telephone=no" name="format-detection">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <title>QQ-AB图合成器</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script type="text/javascript">
+        // 通过控制 rem 处理移动端自适应
+        (function (win, doc) {
+            if (!win.addEventListener) return;
+            let html = document.documentElement;
+            function setFont() {
+                let cliWidth = html.clientWidth;
+                html.style.fontSize = 40 * (cliWidth / 750) + 'px';
+            }
+            win.addEventListener('resize', setFont, false);
+            setFont();
+        })(window, document);
+    </script>
+</head>
+<body>
+    <header>QQ-AB图生成器</header>
+    <div class="img-box">
+        <div class="img-box-item">
+            <div class="img-show" id="smallImg">
+                <input type="file" accept="image/*" id="chooseSmall" class="img-file" />
+            </div>
+            <div class="img-txt">缩略图</div>
+        </div>
+        <div class="img-box-item">
+            <div class="img-show" id="largeImg">
+                <input type="file" accept="image/*" id="chooseLarge" class="img-file" />
+            </div>
+            <div class="img-txt">展开图</div>
+        </div>
+    </div>
+    <div>
+        <input type="button" value="合成图片" class="btn-generate" id="generate" />
+    </div>
+    <div class="result" id="result"></div>
+    <footer>Code by 前端小玖 !</footer>
+    <script type="text/javascript" src="js/composite.js"></script>
+    <script>
+        let $ = (id) => document.getElementById(id)
+        let chooseSmall = $('chooseSmall')
+        let chooseLarge = $('chooseLarge')
+        let smallImg = $('smallImg')
+        let largeImg = $('largeImg')
+        let generate = $('generate')
+        let composite = new Composite('result')
+
+        // 处理图片
+        let handleChoose = function (files, element, mark) {
+            let file = files[0],
+                reader = new FileReader()
+            reader.readAsDataURL(file)
+            reader.onload = (e) => {
+                element.style.backgroundImage = `url(${e.target.result})`
+                element.style.backgroundSize = '95% 95%'
+                let img = new Image()
+                img.src = e.target.result
+                mark === 'small' ? composite.imgWhite(img) : composite.imgBlack(img)
+            }
+        }
+        
+        // 选择缩略图
+        chooseSmall.onchange = function (ev) {
+            handleChoose(ev.target.files, smallImg, 'small')
+        }
+
+        // 选择展开图
+        chooseLarge.onchange = function (ev) {
+            handleChoose(ev.target.files, largeImg, 'large')
+        }
+
+        // 生成图片
+        generate.onclick = function () {
+            composite.generate()
+        }
+    </script>
+</body>
+</html>
